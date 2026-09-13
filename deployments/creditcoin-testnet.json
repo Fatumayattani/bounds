@@ -1,0 +1,52 @@
+{
+  "network": "Creditcoin Testnet",
+  "chainId": 102031,
+  "explorer": "https://creditcoin-testnet.blockscout.com",
+  "contract": {
+    "name": "BoundsSettlement",
+    "address": "0x4b403e46800A485fdE2a0be2228228f78f20C7D4",
+    "deploymentBlock": 5482033,
+    "deploymentTransaction": "0x1daa10db4909d5caa0ad5139e0c54bb9fdb4ff5f4677ab3aba120b5776c59372",
+    "sourceTelemetryContract": "0x4b403e46800A485fdE2a0be2228228f78f20C7D4",
+    "sourceChainKey": 1
+  },
+  "participants": {
+    "buyer": "0xB51A5de45176aE2bC606d837fb9Dd3aeD5647101",
+    "carrier": "0x812584e7AeDFfD6156A4628629bDE5c6c6372A05"
+  },
+  "settlements": [
+    {
+      "scenario": "compliant",
+      "shipmentId": "0xe908418e707a475835fe4f8bb35e818662999e2e266ef4603592c42a0f2e4fb5",
+      "escrowAmountTctc": "1.0",
+      "penaltyBps": 2500,
+      "fundingTransaction": "0x1a8d46fcfc67f6b260c927dcae4978fa74a226c637fbe007a3b3ceefcfa92251",
+      "sourceTransaction": "0x88b3be315db41b61d5369693691f395d11765149f205ee5119ac120286263d3c",
+      "settlementTransaction": "0x76711508668f8d214a53ed198d72649ff9e714c7cc94616cf3cedc9310afdbb5",
+      "settlementBlock": 5482085,
+      "carrierCreditTctc": "1.0",
+      "buyerRefundTctc": "0.0",
+      "queryId": "0x640fa4cfcb0ca050f506082c1ba35b406d920fa042941f89da29d2e6fbc63d2a"
+    },
+    {
+      "scenario": "breached",
+      "shipmentId": "0xec6bd16d157da907465e09f3b2598a231f7613c0166d0dec3ded799336993e33",
+      "escrowAmountTctc": "1.0",
+      "penaltyBps": 2500,
+      "fundingTransaction": "0xcf44692833e29f863020aac950fc26aec4706e5fb891a64b2653b31459da564d",
+      "sourceTransaction": "0x6cf74d0a14391598734aaf07b79801d02a4d9d06386ca0cd152a45216e2c6fa3",
+      "settlementTransaction": "0x71acd33e6c7500e5ba7f5d28d701e69a88e934a77fc971da87a9a41da19a9bdb",
+      "settlementBlock": 5482117,
+      "carrierCreditTctc": "0.75",
+      "buyerRefundTctc": "0.25",
+      "queryId": "0x157ed404121aa8f87576906a6f1711c0b5c2c6589d7123ca51adf45b73f3cacf"
+    }
+  ],
+  "attestcoin": {
+    "sdk": "@gluwa/usc-sdk@0.18.0",
+    "contracts": "@gluwa/asc-contracts@0.2.1",
+    "proofBuilder": "https://proof-gen-api.cc3-testnet.creditcoin.network/",
+    "nativeQueryVerifier": "0x0000000000000000000000000000000000000FD2",
+    "status": "verified-end-to-end"
+  }
+}

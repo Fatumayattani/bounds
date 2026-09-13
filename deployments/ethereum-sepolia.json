@@ -35,8 +35,12 @@
       "block": 11696964
     }
   ],
-  "attestcoinIntegration": {
-    "status": "planned-for-pr-3",
-    "sourceContract": "0x4b403e46800A485fdE2a0be2228228f78f20C7D4"
+    "attestcoinIntegration": {
+    "status": "live-and-verified",
+    "sourceChainKey": 1,
+    "destinationChain": "Creditcoin Testnet",
+    "destinationChainId": 102031,
+    "proofBuilder": "https://proof-gen-api.cc3-testnet.creditcoin.network/",
+    "settlementContract": "0x4b403e46800A485fdE2a0be2228228f78f20C7D4"
   }
 }

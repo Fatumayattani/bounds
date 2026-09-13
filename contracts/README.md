@@ -1,104 +1,74 @@
-# Bounds contracts
+# Bounds Contracts
 
-This directory contains the smart contracts, deployment scripts, and tests for the Bounds cold-chain settlement protocol.
+Bounds uses two contracts across two testnets to convert cold-chain telemetry into Attestcoin-verified settlement.
 
-## Implemented contract
+## Contracts
 
-### BoundsTelemetry
+### `BoundsTelemetry.sol`
 
-`src/BoundsTelemetry.sol` records settlement-relevant shipment telemetry on Ethereum Sepolia.
+Deployed on Ethereum Sepolia.
 
-The contract provides:
+- Maintains an authorized sensor allowlist.
+- Commits temperature extrema, out-of-range duration, timestamp, and a telemetry hash.
+- Emits `TelemetryCommitted`, which becomes the source event proved through Attestcoin.
+- Tracks a per-shipment nonce to distinguish successive readings.
 
-- Owner-controlled sensor authorization
-- Sensor revocation
-- Authorized telemetry submission
-- Shipment-specific nonces
-- Latest telemetry lookup
-- Tamper-evident payload hashes
-- Indexed events for cross-chain verification
+### `BoundsSettlement.sol`
 
-### Telemetry record
+Deployed on Creditcoin Testnet.
 
-Each record contains:
+- Escrows native tCTC against a shipment.
+- Accepts only Ethereum Sepolia proofs using Attestcoin chain key `1`.
+- Calls Creditcoin’s native query verifier at `0x0000000000000000000000000000000000000FD2`.
+- Decodes the verified EVM transaction and receipt using the official Gluwa contracts package.
+- Requires a successful transaction and an exact `TelemetryCommitted` event from the registered source contract.
+- Releases full payment when telemetry remains within bounds.
+- Applies the configured penalty when telemetry records a breach.
+- Prevents proof replay and uses pull payments for withdrawals.
 
-| Field | Solidity type | Meaning |
-| --- | --- | --- |
-| `sensor` | `address` | Authorized address that submitted the record |
-| `minimumTemperature` | `int16` | Minimum temperature in centi-degrees Celsius |
-| `maximumTemperature` | `int16` | Maximum temperature in centi-degrees Celsius |
-| `outOfRangeSeconds` | `uint32` | Total time outside the permitted range |
-| `recordedAt` | `uint64` | Sensor-provided Unix timestamp |
-| `telemetryHash` | `bytes32` | Hash of the underlying telemetry payload |
-| `nonce` | `uint64` | Shipment-specific submission sequence |
+## Structure
 
-The contract validates authorization, nonzero identifiers and hashes, timestamp presence, and temperature-range consistency.
-
-It intentionally does not claim that the blockchain can verify physical sensor calibration or the accuracy of the sensor clock.
-
-## Ethereum Sepolia deployment
-
-| Component | Address |
-| --- | --- |
-| BoundsTelemetry | [`0x4b403e46800A485fdE2a0be2228228f78f20C7D4`](https://sepolia.etherscan.io/address/0x4b403e46800A485fdE2a0be2228228f78f20C7D4) |
-| Authorized sensor | [`0xB51A5de45176aE2bC606d837fb9Dd3aeD5647101`](https://sepolia.etherscan.io/address/0xB51A5de45176aE2bC606d837fb9Dd3aeD5647101) |
-
-Deployment transaction:
-
-[`0x25aac78a6e9e5d32e30d9fa0eabf649e2d626881c3216d90ca23cf330b40e7e5`](https://sepolia.etherscan.io/tx/0x25aac78a6e9e5d32e30d9fa0eabf649e2d626881c3216d90ca23cf330b40e7e5)
-
-Sensor authorization transaction:
-
-[`0x302f40188e52009177a31b8a618166d20f72c9a30b465612a08ba4cd7faa09f0`](https://sepolia.etherscan.io/tx/0x302f40188e52009177a31b8a618166d20f72c9a30b465612a08ba4cd7faa09f0)
-
-## Test coverage
-
-`test/BoundsTelemetry.t.sol` contains 13 tests covering:
-
-- Owner configuration
-- Sensor authorization and revocation
-- Access control
-- Invalid sensor addresses
-- Duplicate authorization
-- Invalid shipment identifiers
-- Invalid telemetry hashes
-- Invalid temperature ranges
-- Missing timestamps
-- Successful telemetry storage and events
-- Shipment nonce increments
-
-Run the tests from the repository root:
-
-```bash
-forge test --root contracts -vv
-````
+```text
+contracts/
+├── script/
+│   ├── DeployBoundsSettlement.s.sol
+│   └── DeployBoundsTelemetry.s.sol
+├── src/
+│   ├── BoundsSettlement.sol
+│   └── BoundsTelemetry.sol
+└── test/
+    ├── BoundsSettlement.t.sol
+    └── BoundsTelemetry.t.sol
+```
 
 ## Build
 
+From the repository root:
+
 ```bash
-forge fmt --root contracts
 forge build --root contracts
 ```
 
-## Deployment
-
-The deployment script reads configuration from environment variables, deploys `BoundsTelemetry`, and authorizes the configured sensor in the same broadcast sequence.
-
-Required variables:
-
-```dotenv
-ETHEREUM_SEPOLIA_RPC_URL=
-DEPLOYER_PRIVATE_KEY=
-SENSOR_ADDRESS=
-```
-
-Load the local environment:
+## Format
 
 ```bash
-source .env
+forge fmt --root contracts
 ```
 
-Deploy:
+## Test
+
+```bash
+forge test --root contracts -vv
+```
+
+The suite contains 21 tests:
+
+- 13 telemetry and sensor-authorization tests.
+- 8 escrow and Attestcoin settlement tests.
+
+The settlement tests cover compliant payment, breach penalties, withdrawals, incorrect source chains, incorrect destination chains, forged event emitters, and proof replay.
+
+## Deploy source telemetry
 
 ```bash
 forge script contracts/script/DeployBoundsTelemetry.s.sol:DeployBoundsTelemetry \
@@ -108,4 +78,27 @@ forge script contracts/script/DeployBoundsTelemetry.s.sol:DeployBoundsTelemetry 
   -vv
 ```
 
-Never commit private keys or use a production wallet for testnet deployment.
+## Deploy settlement
+
+The standard Foundry script is:
+
+```bash
+forge script contracts/script/DeployBoundsSettlement.s.sol:DeployBoundsSettlement \
+  --root contracts \
+  --rpc-url "$CREDITCOIN_RPC_URL" \
+  --broadcast \
+  -vv
+```
+
+Some Creditcoin RPC responses omit the `mixHash` field expected by current Foundry simulation. The live deployment was therefore broadcast as a legacy raw contract-creation transaction after compilation.
+
+## Live addresses
+
+| Network | Contract | Address |
+| --- | --- | --- |
+| Ethereum Sepolia | `BoundsTelemetry` | `0x4b403e46800A485fdE2a0be2228228f78f20C7D4` |
+| Creditcoin Testnet | `BoundsSettlement` | `0x4b403e46800A485fdE2a0be2228228f78f20C7D4` |
+
+The identical addresses are expected: the same deployer used the same creation nonce on separate chains.
+
+Full transaction hashes and verified settlement records are stored under `deployments/`.
