@@ -1,0 +1,42 @@
+{
+  "network": "Ethereum Sepolia",
+  "chainId": 11155111,
+  "contract": {
+    "name": "BoundsTelemetry",
+    "address": "0x4b403e46800A485fdE2a0be2228228f78f20C7D4",
+    "deploymentBlock": 11696929,
+    "deploymentTransaction": "0x25aac78a6e9e5d32e30d9fa0eabf649e2d626881c3216d90ca23cf330b40e7e5"
+  },
+  "sensor": {
+    "address": "0xB51A5de45176aE2bC606d837fb9Dd3aeD5647101",
+    "authorizationTransaction": "0x302f40188e52009177a31b8a618166d20f72c9a30b465612a08ba4cd7faa09f0"
+  },
+  "telemetryProofs": [
+    {
+      "scenario": "safe",
+      "shipmentReference": "BND-001",
+      "shipmentId": "0xe908418e707a475835fe4f8bb35e818662999e2e266ef4603592c42a0f2e4fb5",
+      "minimumTemperatureCelsius": 4,
+      "maximumTemperatureCelsius": 4.5,
+      "outOfRangeSeconds": 0,
+      "telemetryHash": "0x4c1b09158e69ebf554a2af30846ced3695edf87b49131f6e7e2daebf117906b5",
+      "transaction": "0x88b3be315db41b61d5369693691f395d11765149f205ee5119ac120286263d3c",
+      "block": 11696942
+    },
+    {
+      "scenario": "breach",
+      "shipmentReference": "BND-BREACH-001",
+      "shipmentId": "0xec6bd16d157da907465e09f3b2598a231f7613c0166d0dec3ded799336993e33",
+      "minimumTemperatureCelsius": 4.2,
+      "maximumTemperatureCelsius": 10.1,
+      "outOfRangeSeconds": 120,
+      "telemetryHash": "0xbfc13618ea0ffb5b54eac187ce6b18b9442202f3120d7a0ae6aae48c7dbc8366",
+      "transaction": "0x6cf74d0a14391598734aaf07b79801d02a4d9d06386ca0cd152a45216e2c6fa3",
+      "block": 11696964
+    }
+  ],
+  "attestcoinIntegration": {
+    "status": "planned-for-pr-3",
+    "sourceContract": "0x4b403e46800A485fdE2a0be2228228f78f20C7D4"
+  }
+}
