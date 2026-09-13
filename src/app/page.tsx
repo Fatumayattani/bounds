@@ -1,3 +1,4 @@
+import { LiveSettlements } from "@/components/live-settlements";
 const protocolSteps = [
   {
     number: "01",
@@ -225,7 +226,7 @@ export default function Home() {
 
           <span className="evidence-mark">◎</span>
         </div>
-
+        <LiveSettlements />
         <div className="evidence-grid">
           <EvidenceItem label="Source chain" value="Ethereum Sepolia" />
           <EvidenceItem label="Telemetry" value="Awaiting commitment" />
